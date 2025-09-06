@@ -8,6 +8,10 @@ def send_mail(bduget_df, market_df, squad_df, email):
     """Sends an email with the provided DataFrames as HTML tables."""
     EMAIL_ADDRESS = os.getenv("EMAIL_USER")
     EMAIL_PASSWORD = os.getenv("EMAIL_PASS")
+    
+    if not EMAIL_ADDRESS or not EMAIL_PASSWORD:
+        print("Error: EMAIL_USER or EMAIL_PASS environment variables not set!")
+        return
 
     # If it's 22:00 or later, show tomorrow's date; else today
     now = datetime.now(ZoneInfo("Europe/Berlin"))
@@ -77,9 +81,18 @@ def send_mail(bduget_df, market_df, squad_df, email):
     """, subtype="html")
 
     # Send email via Gmail SMTP
-    with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
-        smtp.starttls()
-        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-        smtp.send_message(msg)
-
-    print("Email sent successfully!")
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
+            smtp.starttls()
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+        print("Email sent successfully!")
+    except smtplib.SMTPAuthenticationError as e:
+        print(f"SMTP Authentication Error: {e}")
+        print("This usually means:")
+        print("1. Your Gmail account has 2-factor authentication enabled and you need an App Password")
+        print("2. Go to https://myaccount.google.com/ → Security → 2-Step Verification → App passwords")
+        print("3. Generate an App Password for 'Mail' and use that instead of your regular password")
+        print("4. Update the EMAIL_PASS in your .env file with the 16-character App Password")
+    except Exception as e:
+        print(f"Error sending email: {e}")
