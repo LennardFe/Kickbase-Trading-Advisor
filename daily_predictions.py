@@ -47,7 +47,7 @@ target = "mv_target_clipped"
 # Adjust these settings to your preferences
 
 competition_ids = [1]                   # 1 = Bundesliga, 2 = 2. Bundesliga, 3 = La Liga
-league_name = "Die 10 Nuggatschleusen"  # Name of your league, must be exact match, can be done via env or hardcoded
+league_name = "Kegelbrüder OS"  # Name of your league, must be exact match, can be done via env or hardcoded
 start_budget = 50_000_000              # Starting budget of your league, used to calculate current budgets of other managers
 email = os.getenv("EMAIL_USER")         # Email to send recommendations to, can be the same as EMAIL_USER or different
 
@@ -95,4 +95,4 @@ squad_recommendations_df = join_current_squad(token, league_id, live_predictions
 display(squad_recommendations_df)
 
 # Send email with recommendations
-send_mail(manager_budgets_df, market_recommendations_df, squad_recommendations_df, email)
+# send_mail(manager_budgets_df, market_recommendations_df, squad_recommendations_df, email)
