@@ -56,17 +56,23 @@ def get_league_id(token, league_name):
 def get_activities(token, league_id):
     # TODO magic number with 1000, have to find a better solution
     # TODO instead of hardcoded date let the user provide it
-    url = f"{BASE_URL}/leagues/{league_id}/activitiesFeed?max=5000&query=dt>=2025-08-08"
+    url = f"{BASE_URL}/leagues/{league_id}/activitiesFeed?max=5000"
     headers = {"Authorization": f"Bearer {token}"}
     resp = requests.get(url, headers=headers)
     resp.raise_for_status()
     data = resp.json()
 
-    login = [entry for entry in data["af"] if entry.get("t") == 22]
-    
-    achievements = [entry for entry in data["af"] if entry.get("t") == 26]
+    # Filter out entries prior to reset_Date
+    reset_Date = "2025-08-08T12:00:00Z"
+    filtered_activities = []
+    for entry in data["af"]:
+        entry_date = entry.get("dt", "")
+        if entry_date >= reset_Date:
+            filtered_activities.append(entry)
 
-    trade = [entry for entry in data["af"] if entry.get("t") == 15]
+    login = [entry for entry in filtered_activities if entry.get("t") == 22]
+    achievements = [entry for entry in filtered_activities if entry.get("t") == 26]
+    trade = [entry for entry in filtered_activities if entry.get("t") == 15]
     trading = [
         {k: entry["data"].get(k) for k in ["byr", "slr", "pi", "pn", "tid", "trp"]}
         for entry in trade
@@ -104,8 +110,18 @@ def get_manager_performance(token, league_id, manager_id, manager_name):
     resp = requests.get(url, headers=headers)
     resp.raise_for_status()
     data = resp.json()
-
-    tp_value = data["it"][0]["tp"]  # tp extrahieren
+    
+    # Look for season ID "34" (current season 2025/2026)
+    tp_value = 0
+    for season in data["it"]:
+        if season["sid"] == "34":
+            tp_value = season["tp"]
+            break
+    else:
+        # Fallback to first season if sid "34" not found
+        tp_value = data["it"][0]["tp"]
+        print(f"Warning: Season ID '34' not found for {manager_name}, using first season")
+    
 
     return {
         "name": manager_name,
