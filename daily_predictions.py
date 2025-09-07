@@ -47,7 +47,7 @@ target = "mv_target_clipped"
 # Adjust these settings to your preferences
 
 competition_ids = [1]                   # 1 = Bundesliga, 2 = 2. Bundesliga, 3 = La Liga
-league_name = "DEIN LIGANAME"  # Name of your league, must be exact match, can be done via env or hardcoded
+league_name = "Kegelbrüder OS"  # Name of your league, must be exact match, can be done via env or hardcoded
 start_budget = 50_000_000              # Starting budget of your league, used to calculate current budgets of other managers
 email = os.getenv("EMAIL_USER")         # Email to send recommendations to, can be the same as EMAIL_USER or different
 
