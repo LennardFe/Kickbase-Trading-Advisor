@@ -133,6 +133,9 @@ def save_player_data_to_db(token, competition_ids, last_mv_values, last_pfm_valu
                 else:
                     p_df = pd.DataFrame({"date": pd.to_datetime([])})
 
+                # Ensure date columns are in datetime64[us] format, see problem #6
+                p_df["date"] = p_df["date"].astype("datetime64[us]")
+
                 # Merge DataFrames
                 merged_df = (
                     pd.merge_asof(mv_df, p_df, on="date", direction="backward")
