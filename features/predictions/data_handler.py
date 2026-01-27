@@ -117,7 +117,8 @@ def save_player_data_to_db(token, competition_ids, last_mv_values, last_pfm_valu
                 # Market Value
                 mv_df = pd.DataFrame(get_player_market_value(token, competition_id, player_id, last_mv_values))
                 if not mv_df.empty:
-                    mv_df["date"] = pd.to_datetime(mv_df["date"]).sort_values()
+                    mv_df["date"] = pd.to_datetime(mv_df["date"])
+                    mv_df = mv_df.sort_values("date")
 
                 # Special case for players with 500k market value and no change, manually add them
                 #if (mv_df["date"].max() < pd.Timestamp(datetime.now(ZoneInfo("Europe/Berlin")).date())) and mv_df["mv"].iloc[-1] == 500_000:
@@ -129,7 +130,8 @@ def save_player_data_to_db(token, competition_ids, last_mv_values, last_pfm_valu
                 # Performance
                 p_df = pd.DataFrame(get_player_performance(token, competition_id, player_id, last_pfm_values, player_team_id))
                 if not p_df.empty:
-                    p_df["date"] = pd.to_datetime(p_df["date"]).sort_values()
+                    p_df["date"] = pd.to_datetime(p_df["date"])
+                    p_df = p_df.sort_values("date")
                 else:
                     p_df = pd.DataFrame({"date": pd.to_datetime([])})
 
